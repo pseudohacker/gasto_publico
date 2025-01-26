@@ -9,8 +9,10 @@
 .Rds
 .xlsx
 .csv
+.txt
 bd_source/
 output/
+input/
 
 # Session Data files
 .RData
