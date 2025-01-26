@@ -1,0 +1,15 @@
+---
+title: "Carga de datos de gasto público"
+version: 1.0
+author: Javier Loza
+format: html
+editor: source
+---
+
+
+```{r}
+require(pacman)
+
+```
+
+
