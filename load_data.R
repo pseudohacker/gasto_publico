@@ -28,11 +28,12 @@ pacman::p_load(dplyr)
 
 
 #por pliego
-query <- paste("https://api.datosabiertos.mef.gob.pe/DatosAbiertos/v1/datastore_search_sql?sql=",
+limit <- 32000
+query <- glue::glue("https://api.datosabiertos.mef.gob.pe/DatosAbiertos/v1/datastore_search_sql?sql=",
                'SELECT * FROM "a9f4cffc-7d0e-4c7c-ab51-1ff115c5beca"',
                'WHERE "PLIEGO_NOMBRE"',
                "LIKE 'GOBIERNO REGIONAL DEL DEPARTAMENTO DE MOQUEGUA'",
-               'ORDER BY "KEY_VALUE" LIMIT 32000')
+               'ORDER BY "KEY_VALUE" LIMIT {limit}',.sep = " ")
 
 url_encoded <- utils::URLencode(query)
 url <- url_encoded
@@ -58,8 +59,9 @@ dt <- files %>%
 
 dt %>% 
   filter(EJECUTORA_NOMBRE == "GOB. REG. MOQUEGUA - HOSPITAL REGIONAL DE MOQUEGUA" |
-           EJECUTORA_NOMBRE == "REGION MOQUEGUA-SALUD") |>
-  group_by(EJECUTORA_NOMBRE) %>% 
-  summarise(N = n(), gasto = sum(as.numeric(MONTO_DEVENGADO_2023)))
+           EJECUTORA_NOMBRE == "REGION MOQUEGUA-SALUD" |
+           EJECUTORA_NOMBRE == "REGION MOQUEGUA-SEDE CENTRAL") |>
+  group_by(EJECUTORA_NOMBRE, TIPO_ACT_PROY_NOMBRE) %>% 
+  summarise(gasto = sum(as.numeric(MONTO_DEVENGADO_2023)))
 
 
