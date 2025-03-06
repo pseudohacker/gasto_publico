@@ -6,7 +6,7 @@ embed-resources: true
 ---
 ```{r}
 pacman::p_load(dplyr,
-               gt)
+               gt,stringr)
 files <- dir(here::here("input"), pattern = "^metaMoq") # get file names
 dt_2022_2025 <- files %>%
   purrr::map(~ jsonlite::fromJSON(file.path("input", .))$records) %>%
@@ -48,12 +48,19 @@ dt_2022_2025 |>
 
 ```{r}
 dt_2022_2025 |>
-  # filter(GENERICA == 6 | GENERICA == 3) |>
-  group_by(SUBGENERICA_NOMBRE) |>
-  summarise(ejecucion2022 = sum(as.numeric(DEVENGADO_2022))/sum(as.numeric(PIM_2022)),
-            ejecucion2023 = sum(as.numeric(DEVENGADO_2023))/sum(as.numeric(PIM_2023)),
-            ejecucion2024 = sum(as.numeric(DEVENGADO_2024))/sum(as.numeric(PIM_2024)),
-            ejecucion2025 = sum(as.numeric(DEVENGADO_2025))/sum(as.numeric(PIM_2025))) |>
+  filter(str_detect(SUBGENERICA_DET_NOMBRE, "^ALIMENTOS") |
+           str_detect(SUBGENERICA_DET_NOMBRE, "^SUMINISTROS ") |
+           str_detect(SUBGENERICA_DET_NOMBRE, "^VESTUARIOS") |
+           str_detect(SUBGENERICA_DET_NOMBRE, "^COMBUSTIBLES") |
+           str_detect(SUBGENERICA_DET_NOMBRE, "^MATERIALES") |
+           str_detect(SUBGENERICA_DET_NOMBRE, "^REPUESTOS") |
+           str_detect(SUBGENERICA_DET_NOMBRE, "^ENSERES") |
+           str_detect(SUBGENERICA_DET_NOMBRE, "^COMPRA"))  |>
+  group_by(SUBGENERICA_DET_NOMBRE) |>
+  summarise(ejecucion2022 = sum(as.numeric(CERTIFICADO_2022))/sum(as.numeric(PIM_2022)),
+            ejecucion2023 = sum(as.numeric(CERTIFICADO_2023))/sum(as.numeric(PIM_2023)),
+            ejecucion2024 = sum(as.numeric(CERTIFICADO_2024))/sum(as.numeric(PIM_2024)),
+            ejecucion2025 = sum(as.numeric(CERTIFICADO_2025))/sum(as.numeric(PIM_2025))) |>
   gt() |>
   fmt_percent(columns = starts_with("ejecucion"))
 ```
