@@ -1,0 +1,59 @@
+---
+title: "TEST"
+format: html
+editor: visual
+embed-resources: true
+---
+```{r}
+pacman::p_load(dplyr,
+               gt)
+files <- dir(here::here("input"), pattern = "^metaMoq") # get file names
+dt_2022_2025 <- files %>%
+  purrr::map(~ jsonlite::fromJSON(file.path("input", .))$records) %>%
+  purrr::reduce(rbind)
+
+```
+
+# Indicadores presupuestales
+
+## % de devengado toda Fte. Fto. Genérica 2.3 Bienes y Servicios Genérica y 2.6 Ad. Act. No Financieros por trimestre
+
+```{r}
+dt_2022_2025 |>
+  filter(GENERICA == 6 | GENERICA == 3) |>
+  group_by(GENERICA_NOMBRE) |>
+  summarise(ejecucion2022 = sum(as.numeric(DEVENGADO_2022))/sum(as.numeric(PIM_2022)),
+            ejecucion2023 = sum(as.numeric(DEVENGADO_2023))/sum(as.numeric(PIM_2023)),
+            ejecucion2024 = sum(as.numeric(DEVENGADO_2024))/sum(as.numeric(PIM_2024)),
+            ejecucion2025 = sum(as.numeric(DEVENGADO_2025))/sum(as.numeric(PIM_2025))) |>
+  gt() |>
+  fmt_percent(columns = starts_with("ejecucion"))
+```
+
+## % de avance fisico financiero por programa presupuestal
+
+```{r}
+dt_2022_2025 |>
+  # filter(GENERICA == 6 | GENERICA == 3) |>
+  group_by(PROGRAMA_PPTO_NOMBRE) |>
+  summarise(ejecucion2022 = sum(as.numeric(DEVENGADO_2022))/sum(as.numeric(PIM_2022)),
+            ejecucion2023 = sum(as.numeric(DEVENGADO_2023))/sum(as.numeric(PIM_2023)),
+            ejecucion2024 = sum(as.numeric(DEVENGADO_2024))/sum(as.numeric(PIM_2024)),
+            ejecucion2025 = sum(as.numeric(DEVENGADO_2025))/sum(as.numeric(PIM_2025))) |>
+  gt() |>
+  fmt_percent(columns = starts_with("ejecucion"))
+```
+
+## % de certificacion presupuestal por subgenerica de funcionamiento  al trimestre *
+
+```{r}
+dt_2022_2025 |>
+  # filter(GENERICA == 6 | GENERICA == 3) |>
+  group_by(SUBGENERICA_NOMBRE) |>
+  summarise(ejecucion2022 = sum(as.numeric(DEVENGADO_2022))/sum(as.numeric(PIM_2022)),
+            ejecucion2023 = sum(as.numeric(DEVENGADO_2023))/sum(as.numeric(PIM_2023)),
+            ejecucion2024 = sum(as.numeric(DEVENGADO_2024))/sum(as.numeric(PIM_2024)),
+            ejecucion2025 = sum(as.numeric(DEVENGADO_2025))/sum(as.numeric(PIM_2025))) |>
+  gt() |>
+  fmt_percent(columns = starts_with("ejecucion"))
+```
